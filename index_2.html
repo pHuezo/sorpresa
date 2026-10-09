@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Una sorpresa para ti</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#2b060e;--fg:#f7e8c9;--muted:#d6ad72;--accent:#b8862b;--gold:#d9a441;--gold2:#a8741f;--paper:#ecd9a8;--ink:#3a1a10;--wine:#7d1226;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{margin:0;height:100%;color:var(--fg);font-family:'Nunito',system-ui,sans-serif;overflow:hidden;
+  background:
+   repeating-linear-gradient(45deg,rgba(0,0,0,.07) 0 2px,transparent 2px 5px),
+   radial-gradient(ellipse at 50% 20%,#7a1428 0%,#4a0a18 45%,var(--bg) 85%);
+  background-color:var(--bg)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;box-shadow:inset 0 0 140px rgba(0,0,0,.65)}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:18px;z-index:2}
+.screen.on{display:flex}
+h1{font-family:'Fraunces',Georgia,serif;font-weight:400;font-size:clamp(2rem,8vw,3.2rem);line-height:1.15;margin:0;max-width:16ch;color:var(--gold);text-shadow:0 2px 12px rgba(0,0,0,.5)}
+p{margin:0;color:var(--muted);font-size:1.1rem;max-width:30ch;line-height:1.5}
+input{font:inherit;font-size:1.2rem;text-align:center;padding:14px 18px;border-radius:14px;border:2px solid var(--gold2);background:rgba(0,0,0,.25);color:var(--fg);width:min(320px,100%)}
+input::placeholder{color:#a8805a}
+input:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn{font:inherit;font-weight:700;font-size:1.1rem;padding:14px 28px;border:1px solid #f0c66b;border-radius:999px;background:linear-gradient(180deg,#e6b550,#a8741f);color:#3a0a12;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.opts{display:flex;flex-direction:column;gap:10px;width:min(340px,100%)}
+.opt{font:inherit;font-weight:700;font-size:1.05rem;padding:13px 18px;border-radius:14px;border:2px solid var(--gold2);background:rgba(0,0,0,.2);color:var(--fg);cursor:pointer}
+.opt:hover{border-color:var(--gold);background:rgba(217,164,65,.15)}
+.opt.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+#react{min-height:3.2em;color:#f2cf8a;font-weight:700;max-width:28ch}
+#heart{position:fixed;z-index:5;width:84px;height:84px;font-size:68px;line-height:84px;text-align:center;background:none;border:0;cursor:pointer;padding:0;transition:left .45s cubic-bezier(.3,1.4,.5,1),top .45s cubic-bezier(.3,1.4,.5,1);animation:beat 1.2s infinite;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+#count{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;color:var(--muted);font-size:1rem;z-index:4;padding:0 24px}
+#gmsg{color:#f2cf8a;font-weight:700;min-height:1.5em}
+
+/* boleto antiguo de tren */
+.ticket{font-family:'Special Elite','Courier New',monospace;color:var(--ink);width:min(330px,100%);position:relative;transform:rotate(-2deg);animation:pop .7s cubic-bezier(.3,1.5,.5,1);
+  background:repeating-linear-gradient(0deg,rgba(120,80,30,.05) 0 1px,transparent 1px 3px),linear-gradient(135deg,#f1e1b4,var(--paper) 55%,#dcc48a);
+  border:2px solid #8a6a3a;border-radius:4px;box-shadow:0 20px 50px rgba(0,0,0,.6),inset 0 0 40px rgba(120,80,30,.25);text-align:left}
+.ticket .band{background:var(--wine);color:#f2cf8a;text-align:center;padding:8px 10px;letter-spacing:.18em;font-size:.8rem;border-bottom:3px double #f2cf8a}
+.ticket .body{padding:16px 20px 12px}
+.ticket .class{display:flex;justify-content:space-between;font-size:.8rem;letter-spacing:.12em;color:var(--wine);border-bottom:1px solid rgba(58,26,16,.4);padding-bottom:6px}
+.ticket h2{font-weight:400;font-size:2rem;margin:12px 0 2px;letter-spacing:.03em;text-transform:uppercase;color:var(--wine)}
+.ticket .sub{color:#5a3a24;margin:0;max-width:none;font-size:.9rem;line-height:1.35}
+.ticket .row{margin-top:12px;font-size:.78rem;letter-spacing:.1em;color:#7a5a3a}
+.ticket .when{font-size:1.35rem;color:var(--ink);text-transform:uppercase;letter-spacing:.04em}
+.ticket .for{font-size:1rem;color:var(--ink);margin-top:2px;max-width:none;text-transform:uppercase}
+.ticket .perf{position:relative;border-top:2px dashed rgba(58,26,16,.5);margin:6px 0 0}
+.ticket .perf::before,.ticket .perf::after{content:"";position:absolute;top:-13px;width:24px;height:24px;border-radius:50%;background:var(--bg);border:2px solid #8a6a3a}
+.ticket .perf::before{left:-14px}.ticket .perf::after{right:-14px}
+.ticket .stub{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 14px;font-size:.78rem;color:var(--ink)}
+.ticket .stub .no{color:#a3141f;font-size:1.3rem;letter-spacing:.08em}
+.ticket .stamp{position:absolute;right:16px;top:92px;border:3px double rgba(163,20,31,.7);color:rgba(163,20,31,.75);padding:3px 8px;font-size:.8rem;letter-spacing:.15em;transform:rotate(-12deg);border-radius:3px;pointer-events:none}
+.ticket .punch{width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid #8a6a3a;display:inline-block}
+@keyframes pop{from{transform:rotate(-12deg) scale(.3);opacity:0}to{transform:rotate(-2deg) scale(1);opacity:1}}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#heart{animation:none;transition:none}.ticket{animation:none}.opt.shake{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+
+<section class="screen on" id="s1">
+  <h1>Hola, mi amor</h1>
+  <p>Antes de empezar, dime ¿cómo te llamas?</p>
+  <input id="name" type="text" placeholder="Tu nombre" autocomplete="off" maxlength="30" aria-label="Tu nombre">
+  <button class="btn" id="go">Continuar</button>
+</section>
+
+<section class="screen" id="sq">
+  <h1 id="qtitle"></h1>
+  <p>Responde con absoluta honestidad: ¿cuánto me amas?</p>
+  <div class="opts" id="opts"></div>
+  <div id="react" aria-live="polite"></div>
+</section>
+
+<section class="screen" id="s2">
+  <h1>Tengo una sorpresa para ti</h1>
+  <p>Si quieres saber qué es, tendrás que atrapar el corazón.</p>
+  <button class="btn" id="start">Quiero saber</button>
+</section>
+
+<section class="screen" id="s3">
+  <div id="count"><div id="cnum"></div><div id="gmsg"></div></div>
+</section>
+
+<section class="screen" id="s4">
+  <div class="ticket">
+    <div class="band">★ I CHOO CHOO CHOOSE YOU ★</div>
+    <div class="body">
+      <div class="class"><span>PRIMERA CLASE</span><span>IDA Y VUELTA</span></div>
+      <h2>Una cita!!</h2>
+      <p class="sub">Boleto válido para una persona muy especial (tú)</p>
+      <div class="row">FECHA DE VIAJE</div>
+      <div class="when">Sábado 17 de octubre</div>
+      <div class="row">PASAJERO</div>
+      <p class="for" id="forName"></p>
+    </div>
+    <div class="stamp">ADMITE UNO</div>
+    <div class="perf"></div>
+    <div class="stub">
+      <div>
+        <div>Hora y lugar:</div>
+        <div>se revelan en persona</div>
+      </div>
+      <div class="no">Nº 0007</div>
+      <span class="punch" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+
+<button id="heart" aria-label="Corazón" hidden>❤️</button>
+
+<script>
+(function(){
+  var TOTAL=7, attempts=0, name='', locked=false;
+  var $=function(id){return document.getElementById(id)};
+  var heart=$('heart');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function show(id){['s1','sq','s2','s3','s4'].forEach(function(s){$(s).classList.toggle('on',s===id)})}
+  function say(t){$('react').textContent=t}
+
+  /* paso 1: nombre */
+  function goName(){
+    var v=$('name').value.replace(/\s+/g,' ').trim();
+    if(!v){$('name').focus();return}
+    name=v;
+    $('qtitle').textContent=name+', una pregunta importante';
+    show('sq');
+  }
+  $('go').onclick=goName;
+  $('name').addEventListener('keydown',function(e){if(e.key==='Enter')goName()});
+
+  /* paso 2: cuánto me amas (solo "Un chingo" avanza) */
+  var answers=[
+    ['Poquito 🥺','¿Poquito?... mejor cierra la página. Inténtalo de nuevo. 👀',false],
+    ['Mucho 💗','Mmm, aceptable pero no es la respuesta que busco. Otra vez. 😌',false],
+    ['Un chingo ❤️','Ahora sí. Esa es la respuesta correcta chequeteta. ❤️',true],
+    ['Más que a los tacos 🌮','Eso es serio, pero no. Piénsalo mejor. 🌮',false],
+    ['Más de lo legalmente permitido ♾️','Checate loca. Vuelve a responder. ♾️',false]
+  ];
+  var busy=false;
+  answers.forEach(function(a){
+    var b=document.createElement('button');
+    b.className='opt';b.textContent=a[0];
+    b.onclick=function(){
+      if(busy)return;
+      say(a[1]);
+      if(a[2]){
+        busy=true;
+        setTimeout(function(){busy=false;say('');show('s2')},1500);
+      }else{
+        b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');
+      }
+    };
+    $('opts').appendChild(b);
+  });
+
+  /* paso 3: atrapar el corazón (se esconde 6 veces, al 7º intento se deja) */
+  var taunts=['JAJAJA no 😭','Casi… pero no.','Que lenta...','A mi se me hace que no quieres la sorpresa','¿De verdad pensaste que sería tan fácil?','Última oportunidad… 👀'];
+  function updateCount(){
+    var left=TOTAL-attempts;
+    $('cnum').textContent=left===TOTAL?'Toca el corazón':'Te faltan '+left+' toque'+(left===1?'':'s');
+    $('gmsg').textContent=attempts>0?taunts[attempts-1]:'';
+  }
+  function move(){
+    var w=window.innerWidth,h=window.innerHeight,s=84;
+    var cx=parseFloat(heart.style.left)||0,cy=parseFloat(heart.style.top)||0,x,y,tries=0;
+    do{
+      x=Math.random()*(w-s-20)+10;
+      y=Math.random()*(h-s-180)+70;
+      tries++;
+    }while(tries<20&&Math.hypot(x-cx,y-cy)<Math.min(w,h)*.35);
+    heart.style.left=x+'px';heart.style.top=y+'px';
+  }
+  function dodge(){
+    if(locked||attempts>=TOTAL-1)return false;
+    locked=true;setTimeout(function(){locked=false},550);
+    attempts++;updateCount();move();return true;
+  }
+  $('start').onclick=function(){
+    attempts=0;locked=false;show('s3');heart.hidden=false;
+    heart.style.transition='none';
+    heart.style.left=(window.innerWidth/2-42)+'px';
+    heart.style.top=(window.innerHeight/2-42)+'px';
+    void heart.offsetWidth;heart.style.transition='';
+    updateCount();
+  };
+  /* mouse: huye al acercarse; táctil: huye al tocar */
+  heart.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')dodge()});
+  heart.addEventListener('pointerdown',function(e){
+    if(e.pointerType!=='mouse'&&attempts<TOTAL-1){e.preventDefault();dodge()}
+  });
+  heart.addEventListener('click',function(){
+    if(locked)return;
+    if(attempts<TOTAL-1){dodge();return} /* teclado */
+    heart.hidden=true;
+    $('forName').textContent=name;
+    show('s4');celebrate();
+  });
+  window.addEventListener('resize',function(){if(!heart.hidden)move();sizeCanvas()});
+
+  /* paso 4: destellos dorados y fuegos artificiales */
+  var cv=$('fx'),ctx=cv.getContext('2d'),W=0,H=0,dpr=1;
+  var parts=[],rockets=[],running=false,endAt=0,nextLaunch=0;
+  var COLORS=['#d9a441','#f2cf8a','#fff1d0','#c1272d','#e0903a','#b8862b'];
+  function sizeCanvas(){
+    dpr=window.devicePixelRatio||1;W=window.innerWidth;H=window.innerHeight;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  sizeCanvas();
+  function rnd(a,b){return a+Math.random()*(b-a)}
+  function pick(){return COLORS[Math.floor(Math.random()*COLORS.length)]}
+
+  function burst(x,y){
+    var c=pick(),n=70;
+    for(var i=0;i<n;i++){
+      var a=i/n*Math.PI*2,sp=rnd(1.5,5.5);
+      parts.push({k:'f',x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,d:rnd(.008,.016),c:Math.random()<.2?'#fff1d0':c,r:rnd(1.2,2.4)});
+    }
+  }
+  function launch(){
+    rockets.push({x:rnd(W*.15,W*.85),y:H,ty:rnd(H*.12,H*.4),vy:-rnd(7,10)});
+  }
+  function glitter(){
+    for(var i=0;i<3;i++)
+      parts.push({k:'g',x:rnd(0,W),y:-10,vx:rnd(-.6,.6),vy:rnd(1,2.6),life:1,d:.002,c:Math.random()<.5?'#f2cf8a':pick(),r:rnd(1.5,3.5),t:rnd(0,6)});
+  }
+  function frame(now){
+    if(!running)return;
+    ctx.clearRect(0,0,W,H);
+    if(now<endAt){
+      glitter();
+      if(now>nextLaunch){launch();nextLaunch=now+rnd(350,800)}
+    }
+    rockets=rockets.filter(function(r){
+      r.y+=r.vy;r.vy*=.985;
+      ctx.fillStyle='#f2cf8a';ctx.fillRect(r.x,r.y,2,6);
+      if(r.y<=r.ty||r.vy>-1.5){burst(r.x,r.y);return false}
+      return true;
+    });
+    parts=parts.filter(function(p){
+      p.x+=p.vx;p.y+=p.vy;p.life-=p.d;
+      if(p.k==='f'){p.vx*=.98;p.vy=p.vy*.98+.05}
+      else{p.t+=.15;p.x+=Math.sin(p.t)*.5}
+      if(p.life<=0||p.y>H+20)return false;
+      ctx.globalAlpha=p.k==='g'?(.5+.5*Math.sin(p.t*2))*Math.min(1,p.life*3):Math.max(0,p.life);
+      ctx.fillStyle=p.c;
+      ctx.beginPath();
+      if(p.k==='g'){
+        ctx.moveTo(p.x,p.y-p.r*1.6);ctx.lineTo(p.x+p.r,p.y);ctx.lineTo(p.x,p.y+p.r*1.6);ctx.lineTo(p.x-p.r,p.y);
+      }else ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+      return true;
+    });
+    ctx.globalAlpha=1;
+    if(now>=endAt&&!parts.length&&!rockets.length){running=false;ctx.clearRect(0,0,W,H);return}
+    requestAnimationFrame(frame);
+  }
+  function celebrate(){
+    if(reduce)return;
+    parts=[];rockets=[];running=true;
+    var t=performance.now();endAt=t+9000;nextLaunch=t+200;
+    burst(W/2,H*.3);
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>
